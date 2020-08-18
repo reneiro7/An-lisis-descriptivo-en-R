@@ -1,0 +1,160 @@
+---
+title: "Análisis Descriptivo en R"
+author: "Reneiro Muñoz"
+date: "01/07/2020"
+output: html_document
+
+  
+---
+<div style="text-align: justify"> 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Sinopsis  
+En el siguiente trabajo se desarrolla el análisis  descriptivo de un conjunto de datos compuesto por las variables peso, estatura,  género y afición de un grupo de 64 personas. El dataset empleado se encuentra disponible en … 
+
+Inicialmente cargamos las librerías que vamos a utilizar.
+
+```{r message = FALSE, warning=FALSE}
+library(descr)
+library(gmodels)
+library(fdth)
+library(e1071)
+```
+
+Leemos el dataset.
+
+```{r echo=F}
+
+## setting working directory
+knitr::opts_knit$set(root.dir = "/home/reneiro/Documentos/Estadística/")
+```
+
+
+```{r message = FALSE, comment=""}
+df<-read.csv("0001.csv")
+head(df)
+```
+
+```{r  include=FALSE}
+df$Genero<-factor(df$Genero, levels = c(1,2), labels = c("masculino","femenino"))
+head(df$Genero)
+```
+
+```{r include=FALSE}
+df$Aficion<-factor(df$Aficion, levels = c(1,2,3), labels = c("música","deporte", 
+              "baile"));head(df$Aficion)
+```
+
+<br> 
+
+#### Figura 1. Distribución por género
+```{r  echo=F, fig.align="center", comment=""}
+freq(df$Genero, col=c("aquamarine3", "aquamarine2"), main= "Distribución por Género", xlab="Género", 
+     ylab="Frecuencia")
+
+```
+El **67.19%** de las personas tiene género masculino y el **32.81%** femenino.
+
+#### Figura 2. Distribución por afición
+```{r echo=F, fig.align="center", comment=""}
+freq(df$Aficion, col="#1ABC9C", main= "Distribución de Afición", 
+     xlab="Afición", ylab="Frecuencia")
+```
+
+El **26.56%** de las personas tiene como afición la música, **59.38%** el deporte y **14.06%** el baile.
+
+#### Tabla 1. Perfil de afición por género
+```{r echo=F, comment=""}
+CrossTable(df$Genero, df$Aficion, prop.chisq = FALSE, prop.c= FALSE, prop.t = FALSE,
+           format= "SPSS")
+```
+
+Podemos observar que de los hombres el 30.23% tiene como afición la música, el 67.44% el deporte y el 2.33% el baile. Mientras que de las mujeres el 19.05% tiene como afición la música, el 42.86% el deporte y el 38.09%  el baile.
+
+#### Figura 3. Tabla cruzada afición y género
+
+```{r echo=F, comment="",fig.align= "center"}
+plot(df$Genero, df$Aficion, col= c("gray43","lightseagreen", "green3"), main= "Tabla Cruzada 
+Afición y Género", ylab= "Afición", xlab= "Género"  )
+```
+
+#### Tabla 2. Perfil de género para las aficiones
+
+```{r echo=F, comment=""}
+CrossTable(df$Genero, df$Aficion, prop.chisq = FALSE, prop.r= FALSE, prop.t = FALSE, 
+           format = "SPSS")
+```
+
+De las personas que escuchan música el 76.47% son hombres y el 23.53% son mujeres, así mismo de el 76.32% de los que practican deporte son hombres y el 23.68% son mujeres, finalmente el  11.11% de los que les gusta el baile son hombres y el 88.89% son mujeres.
+
+#### Figura 4. Tabla cruzada género y afición
+```{r echo=F, comment="", fig.align= "center"}
+plot(df$Aficion, df$Genero, col= c("lightgreen","mediumseagreen"), main= "Tabla Cruzada Género y
+     Afición", xlab= "Afición", ylab= "Género"  )
+```
+
+#### Tabla 3. Perfil combinado de ambas variables
+
+```{r echo=F, comment=""}
+CrossTable(df$Genero, df$Aficion, prop.chisq = FALSE, prop.r= FALSE, prop.c = FALSE, 
+           format = "SPSS")
+```
+
+
+
+El 20.31% de las personas son hombres y les gusta la música, el 45.31% son hombres y le gusta el deporte, y el 1.56% son hombres y les gusta el baile. Mientras que de todos las personas, el 6.25% son mujeres y les gusta la música, el 14.06% son mujeres y les gusta el deporte y el  12.50% son mujeres y les gusta el baile
+
+
+#### Tabla 4. Tabla de frecuencias 
+(regla de Sturges)
+
+```{r echo=F, comment=""}
+library(fdth)
+TabFec<-(fdt(df$Peso, breaks = "Sturges"))
+
+TabFec$table
+
+```
+
+
+
+La regla de Sturges es un método para determinar el número de clases que deben ir en una tabla de frecuencias. Agrupar nuestros datos en intervalos nos permite organizarlos de una forma más adecuada para realizar su respectivo análisis 
+y sacar las conclusiones.
+
+Con nuestros datos agrupados en 7 clases con un ancho de intervalo de 9.1, encontramos que 19 de las 64 personas, es decir el 29.69% tienen un peso entre 54.6 y 63.7 kilogramos, por otra parte el 96.88% pesa menos de 90.9 kilogramos, también observamos que el 3.12% de las personas pesa 
+entre 90.9 y 109 kilogramos.
+
+
+
+#### Figura 5. Peso de los estudiantes (Histograma)
+
+```{r echo=F, fig.align="center"}
+plot(TabFec, main = "Peso de los Estudiantes", xlab="Peso (Kg)", 
+        ylab = "Frecuencia Absoluta",col = "mediumaquamarine")
+```
+
+De acuerdo con la figura 5 el peso de las personas no se distribuye simétricamente, la forma del histograma representa una distribución sesgada hacia la derecha.
+
+
+#### Coeficiente de asimetría
+
+```{r echo=F, comment=""}
+Coeficiente_Asimetria=skewness(df$Peso)
+Coeficiente_Asimetria
+```
+
+
+El coeficiente de asimetría (en este caso de Fisher), nos permite corroborar el análisis hecho con el histograma, como es mayor que cero **(0.856)**, indica que la distribución es asimétrica a la derecha.
+
+
+</div>
+
+<br> 
+<br> 
+<br> 
+<br> 
+<br> 
+
