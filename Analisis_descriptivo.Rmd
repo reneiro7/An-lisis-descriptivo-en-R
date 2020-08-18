@@ -29,7 +29,7 @@ Leemos el dataset.
 ```{r echo=F}
 
 ## setting working directory
-knitr::opts_knit$set(root.dir = "/home/reneiro/Documentos/Estadística/")
+knitr::opts_knit$set(root.dir = ".../Estadística/")
 ```
 
 
